@@ -6,6 +6,8 @@
 #define MAX_CUSTOMERS 100
 #define MAX_PRODUCTS 50
 #define MAX_CART_ITEMS 20
+#define ADMIN_USERNAME "archit"
+#define ADMIN_PASSWORD "mittal101"
 
 struct Customer {
     char name[50];
@@ -33,7 +35,6 @@ struct CartItem cart[MAX_CART_ITEMS];
 
 int customerCount = 0, productCount = 0, cartItemCount = 0;
 
-// Convert string to lowercase
 void toLowerCase(char str[]) {
     for (int i = 0; str[i]; i++) {
         str[i] = tolower((unsigned char) str[i]);
@@ -57,6 +58,7 @@ void addToCart();
 void viewCart();
 void checkout(char customerName[]);
 float calculateTotal(float price, float tax, float discount, int qty);
+int adminLogin();
 
 int main() {
     loadCustomersFromFile();
@@ -73,17 +75,45 @@ int main() {
         getchar(); // clear buffer
 
         switch (role) {
-            case 1: adminMenu(); break;
-            case 2: customerMenu(); break;
+            case 1:
+                if (adminLogin()) {
+                    adminMenu();
+                }
+                break;
+            case 2:
+                customerMenu();
+                break;
             case 3:
                 saveCustomersToFile();
                 saveProductsToFile();
                 printf("exiting... thank you!\n");
                 exit(0);
-            default: printf("invalid choice!\n");
+            default:
+                printf("invalid choice!\n");
         }
     }
     return 0;
+}
+
+int adminLogin() {
+    char username[50], password[50];
+
+    printf("\n=== administrator login ===\n");
+    printf("username: ");
+    fgets(username, sizeof(username), stdin);
+    username[strcspn(username, "\n")] = '\0';
+
+    printf("password: ");
+    fgets(password, sizeof(password), stdin);
+    password[strcspn(password, "\n")] = '\0';
+
+    if (strcmp(username, ADMIN_USERNAME) == 0 && strcmp(password, ADMIN_PASSWORD) == 0) {
+        printf("login successful.\n");
+        return 1;
+    } else {
+        printf("invalid credentials. access denied.\n");
+        return 0;
+    }
 }
 
 void adminMenu() {
